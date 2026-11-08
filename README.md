@@ -2,7 +2,7 @@
 
 ## 🐋 这是「DSH Whale 系」的一员
 
-一套让陪伴角色**真的在过日子**的 DSH 插件。四个仓库各自独立，装哪个都行，但装在一起才是一整只：
+一套让陪伴角色**真的在过日子**的 DSH 插件。五个仓库各自独立，装哪个都行，但装在一起才是一整只：
 
 | 仓库 | 管什么 |
 |---|---|
@@ -10,7 +10,7 @@
 | [dsh-whale-qq](https://github.com/SenuMirai/dsh-whale-qq) | 💬 **QQ**：群聊/私聊接话、主动搭话、语音、唱歌、表情包、日记、看图 |
 | [dsh-whale-wechat](https://github.com/SenuMirai/dsh-whale-wechat) | 💚 **微信**：私聊/群聊接话，会 @ 人、会引用、会发语音，后台发送不抢焦点 |
 | [dsh-whale-bili](https://github.com/SenuMirai/dsh-whale-bili) | 📺 **刷 B 站**：她自己开 B 站看片子、记下看了什么、偶尔想跟你说一句 |
-| [dsh-douyin-agent](https://github.com/LockyBee/dsh-douyin-agent) （第三方，非本系） | 🎵 **刷抖音**：在本地 Edge 里刷抖音电脑版，按人格和真实观看行为更新兴趣。我们日常在用，直接装上游 |
+| [dsh-whale-douyin](https://github.com/SenuMirai/dsh-whale-douyin) | 🎵 **刷抖音**：在本地 Edge 里刷抖音电脑版，按兴趣和真实观看行为更新口味 |
 
 > 命名统一用 `dsh-whale-` 前缀，看到这个前缀就是一家的。**npm 包名沿用旧 id**（`dsh-qq-group` 这种），因为几个插件之间靠 id 互相认亲，改名会把联动弄断。
 
@@ -20,7 +20,13 @@
 |---|---|
 | [dsh-see-now](https://github.com/deepseek-ai/dsh-see-now) | 让她**看得见你的屏幕**——直播式连续画面，不是一张截图 |
 | [dsh-loadout](https://github.com/YongjianWan/dsh-loadout) | 按需**装卸工具组**，几十个工具不至于一次全糊进上下文 |
-| [dsh-persona-distill](https://github.com/Speraymer/dsh-persona-distill) | 从聊天记录里**蒸馏人设**，省得手写几万字提示词 |
+| [dsh-persona-distill](https://github.com/Speraymer/dsh-persona-distill) | **人格蒸馏**：从聊天记录里蒸馏出人设，省得手写几万字提示词 |
+
+### 好用的语料
+
+| 语料 | 干什么 |
+|---|---|
+| [b-corpus](https://huggingface.co/datasets/Limour/b-corpus) | 开源的 **galgame 文本库**。想让她说话带那味儿，就拿去喂人格蒸馏、做语气样本 |
 
 ---
 
