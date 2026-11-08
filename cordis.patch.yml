@@ -1,0 +1,95 @@
+# Inserts the dsh-world row.
+#
+# ⚠ 2026-11-03 00:15 改回 wish，并且把前一版写的理由一起留在这儿，当作教训：
+#
+#   我昨晚把这里改成了 unrestricted，依据是「统计 102 个会话日志的 agentPreset 末值，
+#   她的家会话是 unrestricted」。那个统计读的是**投影**（agentPreset 客户端状态），
+#   不是 header；而 belongsToWorld() 判的恰恰是 header。
+#   实测：session-0ad11298 的会话头第 1 行写着
+#     {"type":"session","version":4,"cwd":"…\\.dsh\\worlds\\default\\room","agentPreset":"wish"}
+#   —— 一直是 wish。10-29 那次「切到无限制模式」只落了 po06-preset-pending.json
+#   和投影，从没真正改写会话头。
+#
+#   代价说清楚：改错之后世界认不出她，plan_next / check_alarm / cancel_alarm /
+#   reach_out / recall_memory 五个工具全没挂上（对比她 15:00 的请求头还在、16:08 的没了），
+#   家会话写入也不会触发。现在改回来，两边都是 wish，判定恢复。
+#
+#   所以：这个字段必须跟**会话头**对齐，不能跟投影对齐。
+#   查法（唯一可信的一处）：
+#     zstd 解压 <sessions>/<cwd 标签>/<会话id>/session.v4.jsonl.zstd，
+#     第 1 行 JSON 的 .agentPreset 就是它。
+#
+#   wish 预设本身也找回来了：提供它的 @dsh-external/dsh-wish-specializer 源码之前被删空，
+#   已从上游 https://github.com/WestFox-AwA/dsh-wish-specializer 取回
+#   （po06/lib + po06/cordis.patch.yml，含 preset-wish 那一条），包名重新加回 bundles。
+#
+#   companionName: 星钥
+#     不给的话界面就显示 "TA"。
+#
+#   bridge: true
+#     默认 false —— 关着的时候 world 不写 <world>/bridge.json，
+#     dsh-qq-group 那边就找不到「家」的地址，私聊没法交给 DSH 会话里的她。
+#     表现：QQ 面板上写「bridge.json 不存在；dsh-world 还没启动或没开 bridge」，
+#     「私聊世界」一栏永远是「桥未启动」。
+#
+#   outlets（2026-11-02 加）
+#     这是**回程**。bridge: true 只让消息「进得去」，她要说话还得有个出口
+#     推回 QQ 私聊，否则你只会看到她在 DSH 会话里回你，QQ 那头一片空白。
+#
+#     目标地址用 {origin} 占位：world 每次推送前都会把它替换成当前 DSH 的
+#     地址（outlets.js 的 outletUrl）。端口每次重启都会变，写死会立刻失效。
+#
+#     kinds 三个都要：reply（回话）、busy（她在忙时的提示）、reach（主动找你）。
+#
+# QQ 通道（ecosystem/qq）对接的是 SnowLuma 面板，和 dsh-qq-group 是两套东西；
+# 这台机器用 dsh-qq-group，所以那边的「QQ 通道未开启」是预期的，不用管。
+- insert:
+    - id: dsh-world
+      name: dsh-world
+      config:
+        agentPreset: wish
+        companionName: 星钥
+        bridge: true
+        # 抖音观看记录桥（2026-11-03 加，2026-11-04 补归属）
+        #
+        # 那个插件自带一个 AI，会按它自己的兴趣自己刷视频。第一版桥把它的观看记录
+        # 也写成「看了《…》」，等于让她认领别人的经历 —— 主人当场指出来了。
+        #
+        # 现在必须先判归属：读插件自己的 video-sessions.json（自主观看循环的起止时间），
+        # 落在循环时段里的才判给「抖音入口那个 AI」，写成第三人称、带 actor 标记；
+        # 落在时段外的不写记忆，只留活动记录。
+        #
+        # douyinDbDir    : 插件的数据目录（memory/shared.sqlite 在这里），只读
+        # douyinStateDir : 插件的状态目录（video-sessions.json 在这里）
+        #                  = <profile>/node_modules/dsh-douyin-browser-local/state
+        #                  换了 profile 名或者插件升级重装，这条要跟着改；
+        #                  配漏了不会写错记忆，只是抖音那边一条都不进记忆。
+        douyinDbDir: C:/Users/demo/.dsh/douyin-browser
+        douyinStateDir: C:/Users/demo/.dsh/profiles/desktop/node_modules/dsh-douyin-browser-local/state
+        # star-key 网关（2026-11-03 夜）：桌宠那条对话链路。
+        #
+        # 桌宠的对话入口是 DSH 的 LLM 层，所以这边开一个说 OpenAI 协议的小服务，
+        # 桌宠把 chatModel 指到 star-key/home 就行 —— 不用改桌宠一行代码、不用重新构建。
+        # 麦克风、文字、识屏全是它的上游，切过去以后进来的话和出去的声音都回到她本人。
+        #
+        # 只绑 127.0.0.1；需要 bridge: true 一起开（话是从桥进她家的）。
+        starKeyPort: 50124
+        starKeyTimeoutMs: 55000
+        # 她的身体（2026-11-04）：VTube Studio。
+        #
+        # 接上以后她能用三个工具：make_face（表情）、gesture（双手动作）、
+        # body_tilt（歪头点头）。**只挂在她家里**，QQ 会话拿不到。
+        #
+        # VTS 没开时：三个工具 7ms 内失败，返回一句人话（"VTS 没开，我现在动不了"），
+        # 不抛异常、不拖慢任何别的功能。所以平时不用开 VTS，聊天记忆照旧。
+        #
+        # 设置 →「她的身体」能看到状态（模型名、23 个表情、6 个双手动作）。
+        # 填 0 就是完全不接（连那三个工具都不会出现）。
+        vtsPort: 8001
+        outlets:
+          - name: qq
+            url: '{origin}/dsh-qq-group/world/outlet'
+            kinds:
+              - reply
+              - busy
+              - reach

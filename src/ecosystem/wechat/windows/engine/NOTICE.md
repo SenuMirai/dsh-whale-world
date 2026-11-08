@@ -1,0 +1,10 @@
+The version-specific Weixin ABI facts and native message-construction approach
+were researched using Prometheus-first/helper (native/core_version.h,
+native/selftest_bridge.cpp, native/text_bridge.cpp, native/image_send.h and
+native/emoticon_send.h). See the adjacent LICENSE for that project's
+noncommercial terms. This directory is separately licensed, not covered by
+the MIT license at the dsh-world repository root.
+
+This is a tailored send-only bridge. It has its own request ABI and lifecycle;
+it does not include helper's bot framework, model, user interface, receive
+hooks, recall handling, account discovery or group management.

@@ -1,0 +1,93 @@
+{
+  "name": "dsh-world",
+  "version": "0.6.2",
+  "description": "跨会话记忆、生活作息、世界控制台：给 DSH 的陪伴角色一个会记得、会生活的世界",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SenuMirai/dsh-whale-world.git"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./compaction": {
+      "types": "./lib/compaction.d.ts",
+      "default": "./lib/compaction.js"
+    },
+    "./client": "./client/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "client",
+    "src/ecosystem/wechat/windows",
+    "src/ecosystem/README.md",
+    "templates",
+    "cordis.patch.yml",
+    "README.md",
+    "INSTALL.md",
+    "CONTRIBUTING.md",
+    "CHANGELOG.md",
+    "assets",
+    "scripts/enable-tool-free-compaction.ps1"
+  ],
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "scripts": {
+    "build": "node -e \"require('fs').rmSync('lib',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning --test",
+    "prepack": "npm run typecheck && npm run build"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings"
+      ],
+      "platform": "web"
+    },
+    "compatibility": {
+      "dshReleases": {
+        "0.2.1-rc.2": "compatible",
+        "0.2.1-rc.3": "compatible"
+      }
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.0.5",
+    "@deepseek-ai/dsh-agent": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-attachment": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-compaction": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-home-paths": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-llm": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-session": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-session-persistence": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/dsh-tools": ">=0.2.1-rc.2 <0.3.0-0",
+    "@deepseek-ai/schemastery": "~3.18.5"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-agent-loop": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-compaction-basic": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-session-persistence-jsonl": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-session-projection": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-token-meter": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.2",
+    "@types/node": "^22.16.0",
+    "typescript": "^5.9.3"
+  },
+  "homepage": "https://github.com/SenuMirai/dsh-whale-world#readme",
+  "bugs": {
+    "url": "https://github.com/SenuMirai/dsh-whale-world/issues"
+  },
+  "author": "SenuMirai"
+}
