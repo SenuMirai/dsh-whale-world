@@ -231,6 +231,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\enable-tool-free-c
 
 **PR 统一提到 `dev` 分支**，`main` 由维护者从 `dev` 并入后发布，详见 [贡献协议](CONTRIBUTING.md#分支与-pr)。新增 QQ、B 站等生态模块前，请阅读 [贡献协议](CONTRIBUTING.md)：平台代码放在 `src/ecosystem/<channel>/`，复用统一身份、会话和归档能力；涉及内核的修改必须说明原因、影响、兼容性与验证结果。
 
+## 踩过的坑（挑跟本插件相关的）
+
+> 完整版（十条，含微信链路的坑）在 [dsh-whale-wechat 的 README](https://github.com/SenuMirai/dsh-whale-wechat#踩过的坑)。
+
+- **多线程碰同一棵 UIA/COM 对象树会崩进程**（`0xC0000005`，Python 层拦不住）。要收敛到一条专用 owner 线程，且 COM 对象引用绝不跨线程传递。
+- **受管目录里的 exe 会被降权** —— `C:\DSHwork` 这类路径下的 Python 读不到微信内存，症状是「看着都正常但一律发不出去」。用官方解释器路径。
+- **`Start-Process` 启动的进程读不到 UIA**（0 节点 vs 165 节点），要用 `subprocess.Popen` 保住令牌。
+- **一次点击 = 一次提权**：多处 `Start-Process -Verb RunAs` 叠上「`/start` 内部又调一次拉起」，会一次弹出六七个卡在 UAC 的窗口。收敛成一个入口 + 冷却锁。
+- **`outlets` 少配一个平台，她的话就只停在会话里**；而 `reply` 会广播给所有 outlet，两个平台都配会互相串台 —— 要让调用方带 `ticket` 标明来路。
+- **改了 `cordis.patch.yml` 不重启 = 没改**。
+
 ## 许可
 
 MIT
