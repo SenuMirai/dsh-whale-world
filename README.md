@@ -27,6 +27,7 @@
 | 语料 | 干什么 |
 |---|---|
 | [b-corpus](https://huggingface.co/datasets/Limour/b-corpus) | 开源的 **galgame 文本库**。想让她说话带那味儿，就拿去喂人格蒸馏、做语气样本 |
+| [galgame-script-corpus](https://github.com/m-rui001/galgame-script-corpus) | 视觉小说剧本语料：**英/日/中三语 450+ 条目**，命名规范统一（`[中文]` `[日本語]` `[中日对照]`）。比 b-corpus 更适合挑**中日对照**做语气校准 |
 
 ---
 
